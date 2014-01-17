@@ -2,9 +2,9 @@ site :opscode
 
 metadata
 
-# mysql::ruby dependency seems to bypass this.
-# manual `apt-get update` may be necessary to
-# converge on test-kitchen despite this dependency.
+cookbook 'yum', '~> 2.4.4'
+cookbook 'nginx', '~> 2.0.8'
+
 group :integration do
   cookbook 'apt', '~> 2.0'
 end

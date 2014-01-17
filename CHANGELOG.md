@@ -1,3 +1,47 @@
+## v6.4.0
+
+  * Bump gitlab-shell to v1.8.0
+  * Bump gitlab to 6.4.0
+  * Remove stale nginx config file
+  * Default recipe changes
+    - Update gitlab-shell config to point at /usr/local/bin/redis-cli
+    - Fix permissions on .ssh/authorized_keys
+    - Add rack_attack file
+    - Add precompile assets execute
+    - Add logrotate dependency and configuration 
+
+## v6.1.21
+
+  * Add node['database']['userhost'] attribute, fixes #57
+  * Fix gitlab['listen_port']/gitlab['https'] condition, fixes #58
+  * Add node['gitlab']['self_signed_cert'] and documentation, fixes #58
+  * Revert yum-epel changes, COOK-4164 blocking, will re-open
+    - Fix dependency hell w/ nginx cookbook
+  * Add rubocop linting
+  * Add chefspec mysql/postgres http/https branching specs
+  * Remove unneeded python dependency 
+
+## v6.1.10
+
+Bugs squashed:
+
+  * Re-order database components to fix Ubuntu Test-Kitchen run. #44
+  * Update port forwarding configuration in kitchen.yml. #46
+  * Update Satellite paths to fix Gitlab forking. #50
+  * ruby-build installs to node['gitlab']['home'], avoiding PATH hacks
+    for Rake.  Use node['gitlab']['install_ruby_path'] to override. #16
+  * ruby-build failing on 1.9.3-p448, bump version to 1.9.3-p484.
+  * Pinned yum dependency on < 3.0.0
+
+Features added:
+
+  * Add knob for disabling Gravatar. #51
+  * Add LDAP Authentication support. #49
+
+Removed:
+
+  * sudo cookbook dependency removed. #52
+
 ## v6.1.0
 
 Clean up some of the code to target [6-1-stable branch](https://github.com/gitlabhq/gitlabhq/blob/6-1-stable/doc/install/installation.md)

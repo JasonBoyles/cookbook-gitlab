@@ -1,9 +1,11 @@
-## Description
+## Gitlab Cookbook
+
+[![Build Status](https://travis-ci.org/atomic-penguin/cookbook-gitlab.png?branch=master)](https://travis-ci.org/atomic-penguin/cookbook-gitlab)
 
 This cookbook will deploy gitlab; a free project and repository management
 application.
 
-Gitlab code hosted on github [here](https://github.com/gitlabhq/gitlabhq/tree/stable).
+Gitlab code hosted on github [here](https://github.com/gitlabhq/gitlabhq).
 
 ## Important changes
 
@@ -25,7 +27,14 @@ in accordance with the [Filesystem Hierarchy Standard (FHS) version 2.3](http://
 ============
 
 * Hard disk space
-  - About 300 Mb, plus enough space for repositories in application home 
+  - About 600 Mb, plus enough space for repositories in application home
+
+* You need to add `mysql::server` or `postgresql::server` to your run\_list
+  if you intend to run the whole application stack on a single instance.
+  The `gitlab::mysql` and `gitlab::postgresql` recipes set up the RDBMS
+  connection only, to allow for multi-instance architecture.  See
+  `Database Attributes` documentation below for RDBMS connection
+  parameters.
 
 ## Cookbook dependencies
 ============
@@ -34,20 +43,20 @@ in accordance with the [Filesystem Hierarchy Standard (FHS) version 2.3](http://
   - Thanks to Fletcher Nichol for his awesome ruby\_build cookbook.
     This ruby\_build LWRP is used to build Ruby 1.9.3 for gitlab.
 
-* [redisio](http://ckbk.it/redisio)
+* [redisio](http://community.opscode.com/cookbooks/redisio)
   - Thanks to Brian Bianco for this Redis cookbook.
 
 * Opscode, Inc cookbooks
-  - [git](http://ckbk.it/git)
-  - [build-essential](http://ckbk.it/build-essential)
-  - [python](http://ckbk.it/python)
-  - [sudo](http://ckbk.it/sudo)
-  - [nginx](http://ckbk.it/nginx)
-  - [openssh](http://ckbk.it/openssh)
-  - [perl](http://ckbk.it/perl)
-  - [xml](http://ckbk.it/xml)
-  - [zlib](http://ckbk.it/zlib)
-  - [database](http://ckbk.it/database)
+  - [git](http://community.opscode.com/cookbooks/git)
+  - [build-essential](http://community.opscode.com/cookbooks/build-essential)
+  - [sudo](http://community.opscode.com/cookbooks/sudo)
+  - [nginx](http://community.opscode.com/cookbooks/nginx)
+  - [logrotate](http://community.opscode.com/cookbooks/logrotate)
+  - [openssh](http://community.opscode.com/cookbooks/openssh)
+  - [perl](http://community.opscode.com/cookbooks/perl)
+  - [xml](http://community.opscode.com/cookbooks/xml)
+  - [zlib](http://community.opscode.com/cookbooks/zlib)
+  - [database](http://community.opscode.com/cookbooks/database)
 
 
 Attributes
@@ -87,11 +96,14 @@ Attributes
     a role to override the `gitlab['packages']` array.
 
 * `gitlab['https']`
-  - Whether https should be used, default false
+  - Whether https should be used. Default false
+
+* `gitlab['self_signed_cert']`
+  - Allows self-signed certificates over https protocol. Default false
 
 * `gitlab['certificate_databag_id']`
   - Encrypted databag name containing certificate file, CA bundle, and key. Default nil
-  - See [certificate cookbook](http://ckbk.it/certificate) for further information.
+  - See [certificate cookbook](http://community.opscode.com/cookbooks/certificate) for further information.
 
 * `gitlab['backup_path']`
   - Path in file system where backups are stored. Default `gitlab['app_home'] + backups/`
@@ -117,6 +129,11 @@ Attributes
     See [nginx server_name documentation](http://nginx.org/en/docs/http/server_names.html)
     for valid matching patterns.
 
+* gitlab['gravatar']['enabled']
+  - Use Gravatar to fetch user avatars 
+  - Options: "true", "false"
+  - Default "true"
+
 ### Database Attributes
 
 **Note**, most of the database attributes have sane defaults. You will only need to change these configuration options if
@@ -141,6 +158,10 @@ is calculated.
   - The host (fqdn) where the database exists
   - Default `localhost`
 
+* gitlab['database']['userhost']
+  - The host (fqdn) from which the database user may connect.
+  - Default `localhost`
+
 * gitlab['database']['pool']
   - The maximum number of connections to allow
   - Default 5
@@ -153,6 +174,44 @@ is calculated.
   - The username for the database
   - Default `gitlab`
 
+### LDAP Authentication Attributes
+
+* `gitlab'['ldap']['enabled']`
+  - Use LDAP for authentication
+  - Default: false
+
+* `gitlab['ldap']['host']`
+  - Hostname of your LDAP server
+  - Default: "_your_ldap_server"
+
+* `gitlab['ldap']['base']`
+  - Base DN for users (e.g. dc=users,dc=example,dc=com)
+  - Default: "_the_base_where_you_search_for_users"
+
+* `gitlab['ldap']['port']`
+  - LDAP server port
+  - Default: 636
+
+* `gitlab['ldap']['uid']`
+  - User ID used when searching for users (e.g. uid, cn, or sAMAccountName)
+  - Default: "sAMAccountName"
+
+* `gitlab['ldap']['method']`
+  - Connection method used with LDAP server
+  - Options: "ssl", "plain"
+  - Default: "ssl"
+
+* `gitlab['ldap']['bind_dn']`
+  - Some servers require a username in order to bind
+  - Default: "_the_full_dn_of_the_user_you_will_bind_with"
+
+* `gitlab['ldap']['password']`
+  - Some servers require a password in order to bind
+  - Default: "_the_password_of_the_bind_user"
+
+* `gitlab['ldap']['allow_username_or_email_login']`
+  - If you want to allow users to login using both username and email address even though username (uid) will actually be used
+  - Default: true
 
 Usage
 =====
