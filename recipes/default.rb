@@ -317,6 +317,8 @@ unless File.exists?(gitlab_user_file)
     environment('LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8')
     command <<-EOS
     ../bin/rails console production < user.rb
+    cat user.rb
+    echo 'rm -f user.rb'
     EOS
     action :run
   end
@@ -324,7 +326,7 @@ unless File.exists?(gitlab_user_file)
   execute "Touch User Initialized File" do
     user 'root'
     group 'root'
-    command "echo 'touch #{gitlab_user_file}'"
+    command "touch #{gitlab_user_file}"
     action :run
   end
 end
@@ -341,13 +343,20 @@ end
 # Create nginx directories before dropping off templates
 include_recipe 'nginx::commons_dir'
 
+# Setup self signed cert if necessary
+if node['gitlab']['generate_self_signed_cert']
+  if !File.exists?(node['gitlab']['ssl_certificate']) && !File.exists?(node['gitlab']['ssl_certificate_key'])
+    generate_self_signed_cert
+  end
+end
+
 # Render and activate nginx default vhost config
 template '/etc/nginx/sites-available/gitlab' do
   owner 'root'
   group 'root'
   mode '0644'
   source 'nginx.gitlab.erb'
-  notifies :restart, 'service[nginx]'
+  notifies :restart, 'service[nginx]', :delayed
   variables(
       server_name: node['gitlab']['nginx_server_names'].join(' '),
       hostname: node['hostname'],
