@@ -47,6 +47,11 @@ default['gitlab']['database']['database'] = 'gitlab'
 default['gitlab']['database']['username'] = 'gitlab'
 default['gitlab']['database']['userhost'] = 'localhost'
 
+# GitLab user setup
+default['gitlab']['admin_user'] = 'root'
+default['gitlab']['admin_password'] = '5iveL!fe'
+default['gitlab']['admin_email'] = 'admin@local.host'
+
 # Ruby setup
 include_attribute 'ruby_build'
 default['ruby_build']['upgrade'] = 'sync'

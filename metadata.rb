@@ -6,9 +6,9 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 name             'gitlab'
 version          '6.4.0'
 
-%w[ build-essential zlib readline ncurses git openssh redisio xml
-    ruby_build certificate database logrotate mysql nginx
-    postgresql apt ].each do |cb_depend|
+%w[ build-essential zlib readline ncurses git openssh redisio xml ruby_build
+	certificate database logrotate mysql nginx postgresql firewall iptables-ng
+	apt ].each do |cb_depend|
   depends cb_depend
 end
 

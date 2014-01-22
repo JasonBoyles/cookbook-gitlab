@@ -103,7 +103,7 @@ if node['gitlab']['install_ruby'] !~ /package/
   end
 
   # Install required Ruby Gems for Gitlab with ~git/bin/gem
-  %w[charlock_holmes bundler].each do |gempkg|
+  %w[charlock_holmes bundler rails].each do |gempkg|
     gem_package gempkg do
       gem_binary "#{node['gitlab']['install_ruby_path']}/bin/gem"
       action :install
@@ -112,7 +112,7 @@ if node['gitlab']['install_ruby'] !~ /package/
   end
 else
 # Install required Ruby Gems for Gitlab with system gem
-  %w[charlock_holmes bundler].each do |gempkg|
+  %w[charlock_holmes bundler rails].each do |gempkg|
     gem_package gempkg do
       gem_binary "#{node['gitlab']['install_ruby_path']}/bin/gem"
       action :install
@@ -292,6 +292,41 @@ template '/etc/init.d/gitlab' do
       gitlab_app_home: node['gitlab']['app_home'],
       gitlab_user: node['gitlab']['user']
   )
+end
+
+gitlab_user_file = '/root/.gitlab.user.initialized'
+unless File.exists?(gitlab_user_file)
+
+  template node['gitlab']['app_home'] + '/user.rb' do
+    owner node['gitlab']['user']
+    group node['gitlab']['group']
+    mode '0600'
+    source 'user.rb.erb'
+    variables(
+      username: node['gitlab']['admin_user'],
+      password: node['gitlab']['admin_password'],
+      email: node['gitlab']['admin_email']
+    )
+    notifies :restart, "service[gitlab]"
+  end
+
+  execute "Set Admin user Credentials" do
+    user node['gitlab']['user']
+    group node['gitlab']['group']
+    cwd node['gitlab']['app_home']
+    environment('LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8')
+    command <<-EOS
+    ../bin/rails console production < user.rb
+    EOS
+    action :run
+  end
+
+  execute "Touch User Initialized File" do
+    user 'root'
+    group 'root'
+    command "echo 'touch #{gitlab_user_file}'"
+    action :run
+  end
 end
 
 # Use certificate cookbook for keys
