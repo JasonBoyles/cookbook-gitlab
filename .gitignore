@@ -3,3 +3,6 @@ metadata.json
 .kitchen/
 .kitchen.local.yml
 .coverage
+bak.*
+.ruby*
+.vagrant*
