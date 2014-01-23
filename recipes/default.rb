@@ -307,7 +307,6 @@ unless File.exists?(gitlab_user_file)
       password: node['gitlab']['admin_password'],
       email: node['gitlab']['admin_email']
     )
-    notifies :restart, "service[gitlab]"
   end
 
   execute "Set Admin user Credentials" do
