@@ -270,6 +270,7 @@ template "#{node['gitlab']['app_home']}/config/unicorn.rb" do
   variables(
       fqdn: node['fqdn'],
       gitlab_app_home: node['gitlab']['app_home']
+      workers: node['gitlab']['unicorn_workers']
   )
 end
 

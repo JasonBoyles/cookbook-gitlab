@@ -90,6 +90,15 @@ end
 
 default['gitlab']['trust_local_sshkeys'] = 'yes'
 
+# Number of workers will be the number of GB's of RAM, minus one, minimum: 1
+gb_mem = node['memory']['total'].to_i/1000000 - 1
+if gb_mem < 2
+  workers = 1
+else
+  workers = gb_mem
+end
+default['gitlab']['unicorn_workers'] = workers
+
 default['gitlab']['https'] = false
 default['gitlab']['certificate_databag_id'] = nil
 default['gitlab']['generate_self_signed_cert'] = false
