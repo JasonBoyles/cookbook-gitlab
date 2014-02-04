@@ -269,7 +269,7 @@ template "#{node['gitlab']['app_home']}/config/unicorn.rb" do
   mode '0644'
   variables(
       fqdn: node['fqdn'],
-      gitlab_app_home: node['gitlab']['app_home']
+      gitlab_app_home: node['gitlab']['app_home'],
       workers: node['gitlab']['unicorn_workers']
   )
 end
