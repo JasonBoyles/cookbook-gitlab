@@ -30,7 +30,8 @@ default['gitlab']['support_email'] = "gitlab-support@#{node['domain']}"
 
 # Set github URL for gitlab
 default['gitlab']['git_url'] = 'git://github.com/gitlabhq/gitlabhq.git'
-default['gitlab']['git_branch'] = '6-4-stable'
+# this hash references a commit with fixes removing the modernizr gem dependency
+default['gitlab']['git_branch'] = '7ab46b969f5c817acc849e0ed6ce23d25bd5fa09'
 
 # gitlab-shell attributes
 default['gitlab']['shell']['home'] = node['gitlab']['home'] + '/gitlab-shell'
